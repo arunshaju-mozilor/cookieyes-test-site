@@ -31,6 +31,144 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scan Fixture</title>
   <link rel="stylesheet" href="../css/style.css" />
+
+  <!-- Flashy, page-scoped styling. Purely cosmetic — no consent/banner logic.
+       Warm amber / caramel theme. -->
+  <style>
+    /* Warm page backdrop (scoped to this fixture page only) */
+    body { background: #fdf6ec; color: #422006; }
+    header { background: #fffaf2; border-bottom-color: #f3e0c7; }
+    .logo { color: #b45309; }
+    nav a { color: #92400e; }
+    nav a:hover { color: #b45309; }
+    footer { background: #fffaf2; border-top-color: #f3e0c7; color: #a16207; }
+    footer a { color: #92400e; }
+    footer a:hover { color: #b45309; }
+
+    .fixture-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      padding: 4rem 1.5rem 3.5rem;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(120deg, #b45309, #ea580c, #f59e0b, #d97706);
+      background-size: 300% 300%;
+      animation: gradientShift 12s ease infinite;
+      box-shadow: 0 20px 50px -20px rgba(180, 83, 9, 0.6);
+    }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .fixture-hero h1 {
+      color: #fff;
+      font-size: 2.4rem;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+    }
+    .fixture-hero p {
+      color: rgba(255, 255, 255, 0.92);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #fde68a;
+      box-shadow: 0 0 0 0 rgba(253, 230, 138, 0.7);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(253, 230, 138, 0.7); }
+      70%  { box-shadow: 0 0 0 12px rgba(253, 230, 138, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(253, 230, 138, 0); }
+    }
+    /* Floating cookie emojis in the hero backdrop */
+    .float {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.25;
+      animation: floaty 9s ease-in-out infinite;
+      user-select: none;
+    }
+    .float:nth-child(1) { top: 12%; left: 8%;  animation-delay: 0s;   }
+    .float:nth-child(2) { top: 60%; left: 18%; animation-delay: 1.5s; font-size: 1.4rem; }
+    .float:nth-child(3) { top: 22%; right: 12%; animation-delay: 0.8s; }
+    .float:nth-child(4) { top: 68%; right: 9%;  animation-delay: 2.2s; font-size: 1.6rem; }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-18px) rotate(8deg); }
+    }
+
+    /* Live cookie readout */
+    .counter {
+      text-align: center;
+      margin: 2.5rem 0 0.5rem;
+    }
+    .counter .num {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #b45309, #f59e0b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .counter .label {
+      color: #a16207;
+      font-size: 0.95rem;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin: 1.5rem auto 0;
+      max-width: 760px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: chipIn 0.45s ease forwards;
+      box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.4);
+    }
+    @keyframes chipIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .chip .cat { font-weight: 400; opacity: 0.85; font-size: 0.72rem; }
+    .chip.necessary     { background: #b45309; }
+    .chip.functional    { background: #0891b2; }
+    .chip.analytics     { background: #2563eb; }
+    .chip.performance   { background: #7c3aed; }
+    .chip.advertisement { background: #db2777; }
+    .chip.uncategorised { background: #78716c; }
+  </style>
 </head>
 <body>
   <header>
@@ -44,18 +182,75 @@
   </header>
 
   <main>
-    <section class="hero">
+    <section class="fixture-hero">
+      <span class="float">🍪</span>
+      <span class="float">🍪</span>
+      <span class="float">🍪</span>
+      <span class="float">🍪</span>
+      <span class="badge"><span class="dot"></span> Scan ready</span>
       <h1>Scan Fixture</h1>
       <p>
-        This page sets first-party cookies on load covering every CookieYes
-        category — Necessary, Functional, Analytics, Performance, Advertisement —
-        plus 3 uncategorised names, so the scanner has a full set to classify.
+        First-party cookies are set on load covering every CookieYes category —
+        Necessary, Functional, Analytics, Performance, Advertisement — plus 3
+        uncategorised names, giving the scanner a full set to classify.
       </p>
     </section>
+
+    <div class="counter">
+      <div class="num" id="cookie-count">0</div>
+      <div class="label">cookies live in the browser right now</div>
+    </div>
+
+    <div class="chips" id="cookie-chips"></div>
   </main>
 
   <footer>
     <p>&copy; 2026 Mozilor — CookieYes scan fixture.</p>
   </footer>
+
+  <!-- Cosmetic only: READS document.cookie to display what was set.
+       It does not set, change, or remove any cookie. -->
+  <script>
+    (function () {
+      var categories = {
+        'PHPSESSID': 'necessary',
+        'yt-remote-device-id': 'functional',
+        '_ga': 'analytics',
+        '_gid': 'analytics',
+        '_gat': 'performance',
+        '_fbp': 'advertisement',
+        'fr': 'advertisement',
+        'qa_uncat_alpha': 'uncategorised',
+        'qa_uncat_beta': 'uncategorised',
+        'qa_uncat_gamma': 'uncategorised'
+      };
+      var present = document.cookie
+        .split(';')
+        .map(function (c) { return c.trim().split('=')[0]; })
+        .filter(Boolean);
+
+      var countEl = document.getElementById('cookie-count');
+      var chipsEl = document.getElementById('cookie-chips');
+
+      // Animate the counter up to the live total.
+      var target = present.length;
+      var n = 0;
+      var tick = setInterval(function () {
+        n += 1;
+        countEl.textContent = n;
+        if (n >= target) clearInterval(tick);
+      }, 70);
+
+      // Render a chip per cookie, staggered in.
+      present.forEach(function (name, i) {
+        var cat = categories[name] || 'uncategorised';
+        var chip = document.createElement('span');
+        chip.className = 'chip ' + cat;
+        chip.style.animationDelay = (i * 0.08) + 's';
+        chip.innerHTML = name + ' <span class="cat">' + cat + '</span>';
+        chipsEl.appendChild(chip);
+      });
+    })();
+  </script>
 </body>
 </html>
