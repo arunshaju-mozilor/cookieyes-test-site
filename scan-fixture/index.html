@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Set fixture cookies synchronously and FIRST, before any other content,
+       so they exist the moment the CookieYes crawler captures page state.
+       First-party (no Domain=), persistent (1y expiry), SameSite=Lax; path=/. -->
+  <script>
+    (function () {
+      var exp = new Date(Date.now() + 365 * 864e5).toUTCString();
+      // One cookie per CookieYes category (classified by name against the
+      // cookiedatabase.org dictionary), plus invented uncategorised names.
+      var names = [
+        'PHPSESSID',            // Necessary
+        'yt-remote-device-id',  // Functional
+        '_ga',                  // Analytics
+        '_gid',                 // Analytics
+        '_gat',                 // Performance
+        '_fbp',                 // Advertisement
+        'fr',                   // Advertisement
+        'qa_uncat_alpha',       // Uncategorised (invented — not in any dictionary)
+        'qa_uncat_beta',        // Uncategorised
+        'qa_uncat_gamma'        // Uncategorised
+      ];
+      names.forEach(function (n, i) {
+        document.cookie = n + '=qa_test_' + i + '; expires=' + exp + '; path=/; SameSite=Lax';
+      });
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan Fixture</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <span class="logo">Mozilor</span>
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../privacy-policy.html">Privacy Policy</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Scan Fixture</h1>
+      <p>
+        This page sets first-party cookies on load covering every CookieYes
+        category — Necessary, Functional, Analytics, Performance, Advertisement —
+        plus 3 uncategorised names, so the scanner has a full set to classify.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Mozilor — CookieYes scan fixture.</p>
+  </footer>
+</body>
+</html>
