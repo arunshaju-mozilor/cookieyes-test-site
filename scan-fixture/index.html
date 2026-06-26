@@ -294,13 +294,43 @@
     .cat-stat .frac { font-weight: 800; }
     .cat-stat.empty { opacity: 0.45; }
 
+    .cookie-list { max-width: 820px; margin: 1.75rem auto 0; }
+    .cookie-list-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.7rem 1.1rem;
+      background: #fffaf2;
+      border: 1px solid #f3e0c7;
+      border-radius: 12px;
+      color: #b45309;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cookie-list-toggle:hover { background: #fdf0db; }
+    .cookie-list-toggle .chev { transition: transform 0.25s; font-size: 0.8rem; }
+    .cookie-list.collapsed .cookie-list-toggle .chev { transform: rotate(-90deg); }
+    .cookie-list.collapsed .chips {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
     .chips {
       display: flex;
       flex-wrap: wrap;
       gap: 0.6rem;
       justify-content: center;
-      margin: 1.5rem auto 0;
+      margin: 1rem auto 0;
       max-width: 820px;
+      max-height: 1200px;
+      opacity: 1;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.25s ease, margin 0.3s ease;
     }
     .chip {
       display: inline-flex;
@@ -417,7 +447,13 @@
 
     <div class="cat-breakdown" id="cat-breakdown"></div>
 
-    <div class="chips" id="cookie-chips"></div>
+    <div class="cookie-list collapsed" id="cookie-list">
+      <button class="cookie-list-toggle" id="chips-toggle" aria-expanded="false" aria-controls="cookie-chips">
+        <span>All cookies (<span id="chips-count">0</span>)</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="chips" id="cookie-chips"></div>
+    </div>
 
     <section class="trackers">
       <h2>Third-party trackers on this page</h2>
@@ -453,7 +489,8 @@
         cats: document.getElementById('stat-cats'),
         updated: document.getElementById('updated'),
         breakdown: document.getElementById('cat-breakdown'),
-        chips: document.getElementById('cookie-chips')
+        chips: document.getElementById('cookie-chips'),
+        chipsCount: document.getElementById('chips-count')
       };
       els.total.textContent = expectedNames.length;
 
@@ -497,6 +534,8 @@
           els.breakdown.appendChild(b);
         });
 
+        els.chipsCount.textContent = present.length;
+
         // Re-render chips only when the present set actually changes (avoids flicker).
         var sig = present.slice().sort().join('|');
         if (sig !== prevSig) {
@@ -515,6 +554,18 @@
 
       refresh();
       setInterval(refresh, 1000);
+    })();
+  </script>
+
+  <!-- Collapse / expand the cookie chip list. -->
+  <script>
+    (function () {
+      var list = document.getElementById('cookie-list');
+      var btn = document.getElementById('chips-toggle');
+      btn.addEventListener('click', function () {
+        var collapsed = list.classList.toggle('collapsed');
+        btn.setAttribute('aria-expanded', String(!collapsed));
+      });
     })();
   </script>
 </body>
