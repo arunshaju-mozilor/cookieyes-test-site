@@ -178,3 +178,36 @@ footer a {
 footer a:hover {
   color: #2563eb;
 }
+
+/* ── Responsive ── */
+
+/* Tablet */
+@media (max-width: 768px) {
+  nav { padding: 0 1rem; gap: 1rem; }
+  nav ul { gap: 1.25rem; }
+  .hero { padding: 3rem 1rem; }
+  .hero h1 { font-size: 2rem; }
+  main { padding: 1.75rem 1rem; }
+}
+
+/* Mobile */
+@media (max-width: 560px) {
+  nav {
+    flex-direction: column;
+    height: auto;
+    padding: 0.75rem 1rem;
+    gap: 0.6rem;
+  }
+  nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.1rem;
+  }
+  .hero { padding: 2.5rem 0.5rem; }
+  .hero h1 { font-size: 1.65rem; }
+  .hero p { font-size: 1rem; }
+  .btn { padding: 0.7rem 1.5rem; }
+  .cards { gap: 1rem; }
+  .card { padding: 1.35rem; }
+  .page-content h1 { font-size: 1.6rem; }
+}

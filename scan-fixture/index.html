@@ -393,6 +393,22 @@
       border-radius: 999px;
     }
     .tracker small { display: block; font-weight: 400; color: #a16207; }
+
+    /* Responsive (page-scoped) */
+    @media (max-width: 768px) {
+      .fixture-hero { padding: 3rem 1rem 2.75rem; }
+      .fixture-hero h1 { font-size: 2rem; }
+    }
+    @media (max-width: 560px) {
+      .stats { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .stat { padding: 1rem 0.75rem; }
+      .stat .num { font-size: 1.9rem; }
+      .fixture-hero { padding: 2.5rem 1rem 2.25rem; }
+      .fixture-hero h1 { font-size: 1.7rem; }
+      .live-meta { font-size: 0.75rem; }
+      .trackers, .stats, .cat-breakdown, .cookie-list { padding-left: 0; padding-right: 0; }
+      .trackers { padding: 1.25rem; }
+    }
   </style>
 </head>
 <body>
