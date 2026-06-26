@@ -1,41 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Set fixture cookies synchronously and FIRST, before any other content,
-       so they exist the moment the CookieYes crawler captures page state.
-       First-party (no Domain=), persistent (1y expiry), SameSite=Lax; path=/. -->
-  <script>
-    (function () {
-      var exp = new Date(Date.now() + 365 * 864e5).toUTCString();
-      // One cookie per CookieYes category (classified by name against the
-      // cookiedatabase.org dictionary), plus invented uncategorised names.
-      var names = [
-        'PHPSESSID',            // Necessary
-        'yt-remote-device-id',  // Functional
-        '_ga',                  // Analytics
-        '_gid',                 // Analytics
-        '_gat',                 // Performance
-        '_fbp',                 // Advertisement
-        'fr',                   // Advertisement
-        'qa_uncat_alpha',       // Uncategorised (invented — not in any dictionary)
-        'qa_uncat_beta',        // Uncategorised
-        'qa_uncat_gamma'        // Uncategorised
-      ];
-      names.forEach(function (n, i) {
-        document.cookie = n + '=qa_test_' + i + '; expires=' + exp + '; path=/; SameSite=Lax';
-      });
-    })();
-  </script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cookie Lab — Mozilor</title>
   <link rel="stylesheet" href="../css/style.css" />
 
-  <!-- Flashy, page-scoped styling. Purely cosmetic — no consent/banner logic.
-       Warm amber / caramel theme. -->
+  <!-- ============================================================
+       COOKIE LAB — deliberately cookie- & script-heavy test page.
+       Everything here runs BY DEFAULT with NO consent gating, so a
+       CMP (e.g. CookieYes) can be layered on top to verify it blocks
+       these scripts/cookies before consent. Do NOT add type="text/plain"
+       or data-cookieyes here — that would pre-block and defeat the test.
+       ============================================================ -->
+
+  <!-- 1) First-party cookies across every category, set synchronously on load. -->
+  <script>
+    (function () {
+      var exp = new Date(Date.now() + 365 * 864e5).toUTCString();
+      // name -> CookieYes category (for the live readout below)
+      var jar = {
+        // Necessary
+        'PHPSESSID': 'necessary',
+        'csrftoken': 'necessary',
+        'XSRF-TOKEN': 'necessary',
+        'wordpress_test_cookie': 'necessary',
+        // Functional
+        'yt-remote-device-id': 'functional',
+        'yt-remote-connected-devices': 'functional',
+        'wp-wpml_current_language': 'functional',
+        // Analytics
+        '_ga': 'analytics',
+        '_gid': 'analytics',
+        '_ga_QSV2L7QZRD': 'analytics',
+        '__utma': 'analytics',
+        '__utmb': 'analytics',
+        '__utmz': 'analytics',
+        '_hjSessionUser_1234567': 'analytics',
+        '_clck': 'analytics',
+        '_clsk': 'analytics',
+        // Performance
+        '_gat': 'performance',
+        '_gat_gtag_UA_000000_1': 'performance',
+        'AMP_TOKEN': 'performance',
+        // Advertisement
+        '_fbp': 'advertisement',
+        'fr': 'advertisement',
+        '_gcl_au': 'advertisement',
+        'IDE': 'advertisement',
+        'test_cookie': 'advertisement',
+        'MUID': 'advertisement',
+        '_ttp': 'advertisement',
+        'personalization_id': 'advertisement',
+        '_scid': 'advertisement',
+        // Uncategorised (invented names, not in any dictionary)
+        'qa_uncat_alpha': 'uncategorised',
+        'qa_uncat_beta': 'uncategorised',
+        'qa_uncat_gamma': 'uncategorised',
+        'qa_custom_widget': 'uncategorised',
+        'qa_session_flag': 'uncategorised'
+      };
+      var i = 0;
+      for (var name in jar) {
+        document.cookie = name + '=qa_test_' + (i++) + '; expires=' + exp + '; path=/; SameSite=Lax';
+      }
+      window.__cookieCats = jar; // used by the cosmetic readout at the bottom
+    })();
+  </script>
+
+  <!-- 2) Real third-party trackers, loaded BY DEFAULT (placeholder IDs).
+       These are recognisable script URLs that a CMP is expected to auto-block.
+       With dummy IDs they no-op functionally but still fire the network
+       requests and set their own cookies, which is what we want to test. -->
+
+  <!-- Google Tag Manager -->
+  <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({ 'gtm.start': 0, event: 'gtm.js' });
+      var f = d.getElementsByTagName(s)[0], j = d.createElement(s);
+      j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-TEST000');
+  </script>
+
+  <!-- Google Analytics 4 (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEST0000000"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-TEST0000000');
+  </script>
+
+  <!-- Meta (Facebook) Pixel -->
+  <script>
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '000000000000000');
+    fbq('track', 'PageView');
+  </script>
+
+  <!-- Hotjar -->
+  <script>
+    (function (h, o, t, j, a, r) {
+      h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments); };
+      h._hjSettings = { hjid: 1234567, hjsv: 6 };
+      a = o.getElementsByTagName('head')[0];
+      r = o.createElement('script'); r.async = 1;
+      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+      a.appendChild(r);
+    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+  </script>
+
+  <!-- Microsoft Clarity -->
+  <script>
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+      t = l.createElement(r); t.async = 1;
+      t.src = 'https://www.clarity.ms/tag/' + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, 'clarity', 'script', 'test00000');
+  </script>
+
+  <!-- LinkedIn Insight Tag -->
+  <script>
+    _linkedin_partner_id = '0000000';
+    window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+    window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+  </script>
+  <script async src="https://snap.licdn.com/li.lms-analytics/insight.min.js"></script>
+
+  <!-- Flashy, page-scoped styling. Purely cosmetic. Warm amber / caramel theme. -->
   <style>
-    /* Warm page backdrop (scoped to this fixture page only) */
     body { background: #fdf6ec; color: #422006; }
     header { background: #fffaf2; border-bottom-color: #f3e0c7; }
     .logo { color: #b45309; }
@@ -101,7 +203,6 @@
       70%  { box-shadow: 0 0 0 12px rgba(253, 230, 138, 0); }
       100% { box-shadow: 0 0 0 0 rgba(253, 230, 138, 0); }
     }
-    /* Floating cookie emojis in the hero backdrop */
     .float {
       position: absolute;
       font-size: 2rem;
@@ -118,23 +219,80 @@
       50%      { transform: translateY(-18px) rotate(8deg); }
     }
 
-    /* Live cookie readout */
-    .counter {
+    /* Live status dashboard */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      max-width: 820px;
+      margin: 2.5rem auto 0.75rem;
+    }
+    .stat {
+      background: #fff;
+      border: 1px solid #f3e0c7;
+      border-radius: 14px;
+      padding: 1.25rem 1rem;
       text-align: center;
-      margin: 2.5rem 0 0.5rem;
+      box-shadow: 0 8px 20px -16px rgba(180, 83, 9, 0.6);
     }
-    .counter .num {
-      font-size: 3rem;
+    .stat .num {
+      font-size: 2.4rem;
       font-weight: 800;
-      background: linear-gradient(90deg, #b45309, #f59e0b);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      transition: color 0.3s;
     }
-    .counter .label {
+    .stat.active .num   { color: #16a34a; }
+    .stat.blocked .num  { color: #dc2626; }
+    .stat.total .num    { color: #b45309; }
+    .stat.cats .num     { color: #7c3aed; }
+    .stat .label {
+      margin-top: 0.4rem;
       color: #a16207;
-      font-size: 0.95rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
+    .live-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: #a16207;
+      font-size: 0.82rem;
+      margin-bottom: 0.5rem;
+    }
+    .live-meta .dot {
+      background: #16a34a;
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+      animation: pulse 1.8s infinite;
+    }
+    .cat-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 820px;
+      margin: 0.5rem auto 0;
+    }
+    .cat-stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .cat-stat.necessary     { background: #b45309; }
+    .cat-stat.functional    { background: #0891b2; }
+    .cat-stat.analytics     { background: #2563eb; }
+    .cat-stat.performance   { background: #7c3aed; }
+    .cat-stat.advertisement { background: #db2777; }
+    .cat-stat.uncategorised { background: #78716c; }
+    .cat-stat .frac { font-weight: 800; }
+    .cat-stat.empty { opacity: 0.45; }
 
     .chips {
       display: flex;
@@ -142,7 +300,7 @@
       gap: 0.6rem;
       justify-content: center;
       margin: 1.5rem auto 0;
-      max-width: 760px;
+      max-width: 820px;
     }
     .chip {
       display: inline-flex;
@@ -158,9 +316,7 @@
       animation: chipIn 0.45s ease forwards;
       box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.4);
     }
-    @keyframes chipIn {
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes chipIn { to { opacity: 1; transform: translateY(0); } }
     .chip .cat { font-weight: 400; opacity: 0.85; font-size: 0.72rem; }
     .chip.necessary     { background: #b45309; }
     .chip.functional    { background: #0891b2; }
@@ -169,53 +325,45 @@
     .chip.advertisement { background: #db2777; }
     .chip.uncategorised { background: #78716c; }
 
-    /* ── Consent-gated scripts demo ── */
-    .gated {
-      max-width: 760px;
+    /* Third-party trackers list */
+    .trackers {
+      max-width: 820px;
       margin: 3rem auto 0;
       padding: 1.75rem;
       background: #fffaf2;
       border: 1px solid #f3e0c7;
       border-radius: 14px;
     }
-    .gated h2 {
-      font-size: 1.15rem;
-      color: #b45309;
-      margin-bottom: 0.35rem;
+    .trackers h2 { font-size: 1.15rem; color: #b45309; margin-bottom: 0.35rem; }
+    .trackers > p { color: #a16207; font-size: 0.9rem; margin-bottom: 1.25rem; }
+    .tracker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
     }
-    .gated > p {
-      color: #a16207;
-      font-size: 0.9rem;
-      margin-bottom: 1.25rem;
-    }
-    .gated-row {
+    .tracker {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 0.75rem 0;
-      border-top: 1px dashed #f3e0c7;
-    }
-    .gated-row .name { font-weight: 600; }
-    .gated-row .name small { display: block; font-weight: 400; color: #a16207; }
-    .status {
-      flex-shrink: 0;
-      padding: 0.3rem 0.8rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
+      gap: 0.6rem;
+      padding: 0.7rem 0.9rem;
+      background: #fff;
+      border: 1px solid #f3e0c7;
+      border-radius: 10px;
+      font-size: 0.9rem;
       font-weight: 600;
-      background: #fde68a;
-      color: #92400e;
-      transition: background 0.3s, color 0.3s;
+      color: #422006;
     }
-    .status.ran {
-      background: #b45309;
-      color: #fff;
+    .tracker .run {
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #166534;
+      background: #dcfce7;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
     }
+    .tracker small { display: block; font-weight: 400; color: #a16207; }
   </style>
-
-  <!-- No CookieYes banner/consent script here — it is injected at test time.
-       Until then, the text/plain scripts below stay blocked by default. -->
 </head>
 <body>
   <header>
@@ -236,43 +384,51 @@
       <span class="float">🍪</span>
       <span class="float">🍪</span>
       <span class="float">🍪</span>
-      <span class="badge"><span class="dot"></span> Live</span>
+      <span class="badge"><span class="dot"></span> No blocking</span>
       <h1>Cookie Lab</h1>
       <p>
-        First-party cookies are set on load covering every CookieYes category —
-        Necessary, Functional, Analytics, Performance, Advertisement — plus 3
-        uncategorised names, giving the scanner a full set to classify.
+        This page deliberately loads popular third-party trackers and sets a wide
+        spread of cookies — across every category — <strong>on load, with no consent
+        gating</strong>. Point a consent platform at it to verify it blocks the
+        scripts and cookies before consent.
       </p>
     </section>
 
-    <div class="counter">
-      <div class="num" id="cookie-count">0</div>
-      <div class="label">cookies live in the browser right now</div>
+    <div class="stats">
+      <div class="stat active">
+        <div class="num" id="stat-active">0</div>
+        <div class="label">Active</div>
+      </div>
+      <div class="stat blocked">
+        <div class="num" id="stat-blocked">0</div>
+        <div class="label">Blocked / missing</div>
+      </div>
+      <div class="stat total">
+        <div class="num" id="stat-total">0</div>
+        <div class="label">Expected total</div>
+      </div>
+      <div class="stat cats">
+        <div class="num" id="stat-cats">0</div>
+        <div class="label">Active categories</div>
+      </div>
     </div>
+
+    <div class="live-meta"><span class="dot"></span> Live · refreshes every second · updated <span id="updated">—</span></div>
+
+    <div class="cat-breakdown" id="cat-breakdown"></div>
 
     <div class="chips" id="cookie-chips"></div>
 
-    <section class="gated">
-      <h2>Consent-gated scripts</h2>
-      <p>
-        These scripts are tagged <code>type="text/plain"</code> +
-        <code>data-cookieyes="cookieyes-&lt;category&gt;"</code>, so they stay
-        <strong>blocked</strong> until the visitor accepts that category in the
-        CookieYes banner — then CookieYes runs them and the status flips to
-        <strong>ran</strong>.
-      </p>
-
-      <div class="gated-row">
-        <span class="name">Functional script <small>sets demo_functional</small></span>
-        <span class="status" id="status-functional">⏳ blocked</span>
-      </div>
-      <div class="gated-row">
-        <span class="name">Analytics script <small>sets demo_analytics</small></span>
-        <span class="status" id="status-analytics">⏳ blocked</span>
-      </div>
-      <div class="gated-row">
-        <span class="name">Advertisement script <small>sets demo_ads</small></span>
-        <span class="status" id="status-advertisement">⏳ blocked</span>
+    <section class="trackers">
+      <h2>Third-party trackers on this page</h2>
+      <p>All load by default (placeholder IDs). A CMP is expected to block these until consent.</p>
+      <div class="tracker-grid">
+        <div class="tracker">Google Tag Manager <span class="run">running</span></div>
+        <div class="tracker">Google Analytics 4 <span class="run">running</span></div>
+        <div class="tracker">Meta Pixel <span class="run">running</span></div>
+        <div class="tracker">Hotjar <span class="run">running</span></div>
+        <div class="tracker">Microsoft Clarity <span class="run">running</span></div>
+        <div class="tracker">LinkedIn Insight <span class="run">running</span></div>
       </div>
     </section>
   </main>
@@ -281,78 +437,85 @@
     <p>&copy; 2026 Mozilor — Cookie Lab.</p>
   </footer>
 
-  <!-- Cosmetic only: READS document.cookie to display what was set.
-       It does not set, change, or remove any cookie. -->
+  <!-- Live observer: polls document.cookie every second and reports status.
+       READS only — it never sets, changes, or removes a cookie. As a CMP blocks
+       or clears cookies, Active drops and Blocked rises here in real time. -->
   <script>
     (function () {
-      var categories = {
-        'PHPSESSID': 'necessary',
-        'yt-remote-device-id': 'functional',
-        '_ga': 'analytics',
-        '_gid': 'analytics',
-        '_gat': 'performance',
-        '_fbp': 'advertisement',
-        'fr': 'advertisement',
-        'qa_uncat_alpha': 'uncategorised',
-        'qa_uncat_beta': 'uncategorised',
-        'qa_uncat_gamma': 'uncategorised'
+      var catalog = window.__cookieCats || {};
+      var expectedNames = Object.keys(catalog);
+      var ORDER = ['necessary', 'functional', 'analytics', 'performance', 'advertisement', 'uncategorised'];
+
+      var els = {
+        active: document.getElementById('stat-active'),
+        blocked: document.getElementById('stat-blocked'),
+        total: document.getElementById('stat-total'),
+        cats: document.getElementById('stat-cats'),
+        updated: document.getElementById('updated'),
+        breakdown: document.getElementById('cat-breakdown'),
+        chips: document.getElementById('cookie-chips')
       };
-      var present = document.cookie
-        .split(';')
-        .map(function (c) { return c.trim().split('=')[0]; })
-        .filter(Boolean);
+      els.total.textContent = expectedNames.length;
 
-      var countEl = document.getElementById('cookie-count');
-      var chipsEl = document.getElementById('cookie-chips');
+      var prevSig = null; // only re-render chips when the cookie set changes
 
-      // Animate the counter up to the live total.
-      var target = present.length;
-      var n = 0;
-      var tick = setInterval(function () {
-        n += 1;
-        countEl.textContent = n;
-        if (n >= target) clearInterval(tick);
-      }, 70);
+      function readPresent() {
+        return document.cookie
+          .split(';')
+          .map(function (c) { return c.trim().split('=')[0]; })
+          .filter(Boolean);
+      }
 
-      // Render a chip per cookie, staggered in.
-      present.forEach(function (name, i) {
-        var cat = categories[name] || 'uncategorised';
-        var chip = document.createElement('span');
-        chip.className = 'chip ' + cat;
-        chip.style.animationDelay = (i * 0.08) + 's';
-        chip.innerHTML = name + ' <span class="cat">' + cat + '</span>';
-        chipsEl.appendChild(chip);
-      });
+      function refresh() {
+        var present = readPresent();
+        var presentSet = {};
+        present.forEach(function (n) { presentSet[n] = true; });
+
+        var activeExpected = expectedNames.filter(function (n) { return presentSet[n]; });
+        var blocked = expectedNames.length - activeExpected.length;
+
+        var expByCat = {}, actByCat = {};
+        ORDER.forEach(function (c) { expByCat[c] = 0; actByCat[c] = 0; });
+        expectedNames.forEach(function (n) {
+          var c = catalog[n] || 'uncategorised';
+          expByCat[c]++;
+          if (presentSet[n]) actByCat[c]++;
+        });
+        var activeCats = ORDER.filter(function (c) { return actByCat[c] > 0; }).length;
+
+        els.active.textContent = activeExpected.length;
+        els.blocked.textContent = blocked;
+        els.cats.textContent = activeCats;
+        els.updated.textContent = new Date().toLocaleTimeString();
+
+        els.breakdown.innerHTML = '';
+        ORDER.forEach(function (c) {
+          if (!expByCat[c]) return;
+          var b = document.createElement('span');
+          b.className = 'cat-stat ' + c + (actByCat[c] === 0 ? ' empty' : '');
+          b.innerHTML = c + ' <span class="frac">' + actByCat[c] + '/' + expByCat[c] + '</span>';
+          els.breakdown.appendChild(b);
+        });
+
+        // Re-render chips only when the present set actually changes (avoids flicker).
+        var sig = present.slice().sort().join('|');
+        if (sig !== prevSig) {
+          prevSig = sig;
+          els.chips.innerHTML = '';
+          present.forEach(function (name, i) {
+            var cat = catalog[name] || 'uncategorised';
+            var chip = document.createElement('span');
+            chip.className = 'chip ' + cat;
+            chip.style.animationDelay = (i * 0.03) + 's';
+            chip.innerHTML = name + ' <span class="cat">' + cat + '</span>';
+            els.chips.appendChild(chip);
+          });
+        }
+      }
+
+      refresh();
+      setInterval(refresh, 1000);
     })();
-  </script>
-
-  <!-- Helper (necessary → always runs): flips a status pill to "ran". -->
-  <script>
-    window.markDemoLoaded = function (cat) {
-      var el = document.getElementById('status-' + cat);
-      if (el) { el.textContent = '✅ ran'; el.classList.add('ran'); }
-    };
-  </script>
-
-  <!-- Consent-gated scripts. type="text/plain" means the browser will NOT run
-       them; CookieYes re-enables each one only after consent for its category.
-       Each sets its own demo_* cookie and flips its status pill when it runs. -->
-  <script type="text/plain" data-cookieyes="cookieyes-functional">
-    document.cookie = 'demo_functional=loaded; expires=' +
-      new Date(Date.now() + 365 * 864e5).toUTCString() + '; path=/; SameSite=Lax';
-    window.markDemoLoaded && window.markDemoLoaded('functional');
-  </script>
-
-  <script type="text/plain" data-cookieyes="cookieyes-analytics">
-    document.cookie = 'demo_analytics=loaded; expires=' +
-      new Date(Date.now() + 365 * 864e5).toUTCString() + '; path=/; SameSite=Lax';
-    window.markDemoLoaded && window.markDemoLoaded('analytics');
-  </script>
-
-  <script type="text/plain" data-cookieyes="cookieyes-advertisement">
-    document.cookie = 'demo_ads=loaded; expires=' +
-      new Date(Date.now() + 365 * 864e5).toUTCString() + '; path=/; SameSite=Lax';
-    window.markDemoLoaded && window.markDemoLoaded('advertisement');
   </script>
 </body>
 </html>
