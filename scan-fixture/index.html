@@ -29,7 +29,7 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scan Fixture</title>
+  <title>Cookie Lab — Mozilor</title>
   <link rel="stylesheet" href="../css/style.css" />
 
   <!-- Flashy, page-scoped styling. Purely cosmetic — no consent/banner logic.
@@ -168,7 +168,54 @@
     .chip.performance   { background: #7c3aed; }
     .chip.advertisement { background: #db2777; }
     .chip.uncategorised { background: #78716c; }
+
+    /* ── Consent-gated scripts demo ── */
+    .gated {
+      max-width: 760px;
+      margin: 3rem auto 0;
+      padding: 1.75rem;
+      background: #fffaf2;
+      border: 1px solid #f3e0c7;
+      border-radius: 14px;
+    }
+    .gated h2 {
+      font-size: 1.15rem;
+      color: #b45309;
+      margin-bottom: 0.35rem;
+    }
+    .gated > p {
+      color: #a16207;
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+    .gated-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-top: 1px dashed #f3e0c7;
+    }
+    .gated-row .name { font-weight: 600; }
+    .gated-row .name small { display: block; font-weight: 400; color: #a16207; }
+    .status {
+      flex-shrink: 0;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #fde68a;
+      color: #92400e;
+      transition: background 0.3s, color 0.3s;
+    }
+    .status.ran {
+      background: #b45309;
+      color: #fff;
+    }
   </style>
+
+  <!-- No CookieYes banner/consent script here — it is injected at test time.
+       Until then, the text/plain scripts below stay blocked by default. -->
 </head>
 <body>
   <header>
@@ -176,7 +223,9 @@
       <span class="logo">Mozilor</span>
       <ul>
         <li><a href="../index.html">Home</a></li>
+        <li><a href="../about.html">About</a></li>
         <li><a href="../privacy-policy.html">Privacy Policy</a></li>
+        <li><a href="index.html">Cookie Lab</a></li>
       </ul>
     </nav>
   </header>
@@ -187,8 +236,8 @@
       <span class="float">🍪</span>
       <span class="float">🍪</span>
       <span class="float">🍪</span>
-      <span class="badge"><span class="dot"></span> Scan ready</span>
-      <h1>Scan Fixture</h1>
+      <span class="badge"><span class="dot"></span> Live</span>
+      <h1>Cookie Lab</h1>
       <p>
         First-party cookies are set on load covering every CookieYes category —
         Necessary, Functional, Analytics, Performance, Advertisement — plus 3
@@ -202,10 +251,34 @@
     </div>
 
     <div class="chips" id="cookie-chips"></div>
+
+    <section class="gated">
+      <h2>Consent-gated scripts</h2>
+      <p>
+        These scripts are tagged <code>type="text/plain"</code> +
+        <code>data-cookieyes="cookieyes-&lt;category&gt;"</code>, so they stay
+        <strong>blocked</strong> until the visitor accepts that category in the
+        CookieYes banner — then CookieYes runs them and the status flips to
+        <strong>ran</strong>.
+      </p>
+
+      <div class="gated-row">
+        <span class="name">Functional script <small>sets demo_functional</small></span>
+        <span class="status" id="status-functional">⏳ blocked</span>
+      </div>
+      <div class="gated-row">
+        <span class="name">Analytics script <small>sets demo_analytics</small></span>
+        <span class="status" id="status-analytics">⏳ blocked</span>
+      </div>
+      <div class="gated-row">
+        <span class="name">Advertisement script <small>sets demo_ads</small></span>
+        <span class="status" id="status-advertisement">⏳ blocked</span>
+      </div>
+    </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Mozilor — CookieYes scan fixture.</p>
+    <p>&copy; 2026 Mozilor — Cookie Lab.</p>
   </footer>
 
   <!-- Cosmetic only: READS document.cookie to display what was set.
@@ -251,6 +324,35 @@
         chipsEl.appendChild(chip);
       });
     })();
+  </script>
+
+  <!-- Helper (necessary → always runs): flips a status pill to "ran". -->
+  <script>
+    window.markDemoLoaded = function (cat) {
+      var el = document.getElementById('status-' + cat);
+      if (el) { el.textContent = '✅ ran'; el.classList.add('ran'); }
+    };
+  </script>
+
+  <!-- Consent-gated scripts. type="text/plain" means the browser will NOT run
+       them; CookieYes re-enables each one only after consent for its category.
+       Each sets its own demo_* cookie and flips its status pill when it runs. -->
+  <script type="text/plain" data-cookieyes="cookieyes-functional">
+    document.cookie = 'demo_functional=loaded; expires=' +
+      new Date(Date.now() + 365 * 864e5).toUTCString() + '; path=/; SameSite=Lax';
+    window.markDemoLoaded && window.markDemoLoaded('functional');
+  </script>
+
+  <script type="text/plain" data-cookieyes="cookieyes-analytics">
+    document.cookie = 'demo_analytics=loaded; expires=' +
+      new Date(Date.now() + 365 * 864e5).toUTCString() + '; path=/; SameSite=Lax';
+    window.markDemoLoaded && window.markDemoLoaded('analytics');
+  </script>
+
+  <script type="text/plain" data-cookieyes="cookieyes-advertisement">
+    document.cookie = 'demo_ads=loaded; expires=' +
+      new Date(Date.now() + 365 * 864e5).toUTCString() + '; path=/; SameSite=Lax';
+    window.markDemoLoaded && window.markDemoLoaded('advertisement');
   </script>
 </body>
 </html>
